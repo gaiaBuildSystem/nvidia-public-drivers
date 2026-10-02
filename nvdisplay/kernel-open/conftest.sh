@@ -863,7 +863,7 @@ compile_test() {
             #
             # Determine if vfio_migration_ops struct has .migration_get_data_size field.
             #
-            # Added by commit in 4e016f969529f ("vfio: Add an option to get migration 
+            # Added by commit in 4e016f969529f ("vfio: Add an option to get migration
             # data size") in v6.2 kernel.
             #
             CODE="
@@ -1089,10 +1089,10 @@ compile_test() {
 
         vfio_device_ops_has_get_region_info_caps)
             #
-            # Determine if 'struct vfio_device_ops' has 'get_region_info_caps' 
+            # Determine if 'struct vfio_device_ops' has 'get_region_info_caps'
             # callback.
             #
-            # Added by commit 775f726a742a ("vfio: Add get_region_info_caps op") 
+            # Added by commit 775f726a742a ("vfio: Add get_region_info_caps op")
             # in v6.19
             #
             CODE="
@@ -1124,12 +1124,12 @@ compile_test() {
             }"
             compile_check_conftest "$CODE" "NV_PFN_ADDRESS_SPACE_STRUCT_PRESENT" "" "types"
         ;;
-	
+
         irq_bypass_producer_has_token)
             #
             # Determine if 'struct irq_bypass_producer' has 'token' field
             #
-            # Added by commit 2b521d86ee80 ("irqbypass: Take ownership of 
+            # Added by commit 2b521d86ee80 ("irqbypass: Take ownership of
             # producer/consumer token tracking") in v6.17
             #
             CODE="
@@ -1143,12 +1143,12 @@ compile_test() {
 
         irq_bypass_register_producer_has_eventfd_and_irq_args)
             #
-            # Determine if irq_bypass_register_producer() function has 
+            # Determine if irq_bypass_register_producer() function has
             # additional 'eventfd' and 'irq' arguments.
             #
             # Added by commits 2b521d86ee80 ("irqbypass: Take ownership of
-            # producer/consumer token tracking") and 23b54381cee2 
-            # ("irqbypass: Require producers to pass in Linux IRQ number 
+            # producer/consumer token tracking") and 23b54381cee2
+            # ("irqbypass: Require producers to pass in Linux IRQ number
             # during registration") in v6.17
             #
             CODE="
@@ -1168,8 +1168,8 @@ compile_test() {
             #
             # Determine if egm management api are present or not.
             #
-            # unregister_egm_node() function signature changed by commit 
-            # 9863aeed3a2d ("NVIDIA: SAUCE: vfio/nvgrace-egm: Update EGM 
+            # unregister_egm_node() function signature changed by commit
+            # 9863aeed3a2d ("NVIDIA: SAUCE: vfio/nvgrace-egm: Update EGM
             # unregistration API") to use PCI device as its parameter
             # https://github.com/NVIDIA/NV-Kernels.git
             #
@@ -2357,7 +2357,7 @@ compile_test() {
 
             static const struct drm_mode_config_funcs funcs;
             void conftest_drm_fb_create_takes_format_info(void) {
-                funcs.fb_create(NULL, NULL, NULL, NULL); 
+                funcs.fb_create(NULL, NULL, NULL, NULL);
             }"
 
             compile_check_conftest "$CODE" "NV_DRM_FB_CREATE_TAKES_FORMAT_INFO" "" "types"
@@ -3097,11 +3097,17 @@ compile_test() {
             echo "$CONFTEST_PREAMBLE
             #include <drm/drm_modeset_helper_vtables.h>
 
+            #include <linux/version.h>
+            #if LINUX_VERSION_CODE >= KERNEL_VERSION(7, 2, 0)
+            typedef struct drm_atomic_commit conftest_atomic_state_t;
+            #else
+            typedef struct drm_atomic_state conftest_atomic_state_t;
+            #endif
             static const struct drm_crtc_helper_funcs *funcs;
             typeof(*funcs->atomic_check) conftest_drm_crtc_atomic_check_has_atomic_state_arg;
 
             int conftest_drm_crtc_atomic_check_has_atomic_state_arg(
-                    struct drm_crtc *crtc, struct drm_atomic_state *state) {
+                    struct drm_crtc *crtc, conftest_atomic_state_t *state) {
                 return 0;
             }" > conftest$$.c
 
@@ -3273,11 +3279,17 @@ compile_test() {
             echo "$CONFTEST_PREAMBLE
             #include <drm/drm_modeset_helper_vtables.h>
 
+            #include <linux/version.h>
+            #if LINUX_VERSION_CODE >= KERNEL_VERSION(7, 2, 0)
+            typedef struct drm_atomic_commit conftest_atomic_state_t;
+            #else
+            typedef struct drm_atomic_state conftest_atomic_state_t;
+            #endif
             static const struct drm_plane_helper_funcs *funcs;
             typeof(*funcs->atomic_check) conftest_drm_plane_atomic_check_has_atomic_state_arg;
 
             int conftest_drm_plane_atomic_check_has_atomic_state_arg(
-                    struct drm_plane *plane, struct drm_atomic_state *state) {
+                    struct drm_plane *plane, conftest_atomic_state_t *state) {
                 return 0;
             }" > conftest$$.c
 
@@ -4328,7 +4340,7 @@ compile_test() {
         aperture_remove_conflicting_devices)
             #
             # Determine whether aperture_remove_conflicting_devices is present.
-            # 
+            #
             # Added by commit 7283f862bd991 ("drm: Implement DRM aperture
             # helpers under video/") in v6.0
             CODE="

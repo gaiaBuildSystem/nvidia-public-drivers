@@ -168,7 +168,7 @@ static int thermal_trip_event_probe(struct platform_device *pdev)
 	init_waitqueue_head(&tte->waitq_head);
 	dev_set_drvdata(dev, tte);
 
-	tte->cdev = thermal_of_cooling_device_register(np, cdev_type, tte,
+	tte->cdev = thermal_of_cooling_device_register(np, 0, cdev_type, tte,
 						       &tte_cdev_ops);
 	if (IS_ERR(tte->cdev)) {
 		ret = PTR_ERR(tte->cdev);

@@ -23,11 +23,7 @@ TRACE_EVENT(imx185_s_stream,
 		__field(int,	mode)
 	),
 	TP_fast_assign(
-#if defined(NV___ASSIGN_STR_HAS_NO_SRC_ARG)
 		__assign_str(name);
-#else
-		__assign_str(name, name);
-#endif
 		__entry->enable = enable;
 		__entry->mode = mode;
 	),

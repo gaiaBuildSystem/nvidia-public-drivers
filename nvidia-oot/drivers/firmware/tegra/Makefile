@@ -5,12 +5,13 @@
 # Makefile for Extended IVC Driver and BPMP driver
 #
 
-ifneq ($(NV_OOT_IVC_EXT_SKIP_BUILD),y)
+# Always build the real ivc_ext (extended IVC) module. The
+# NV_OOT_IVC_EXT_SKIP_BUILD flag used to swap it for ivc_ext_dummy.o, which
+# exports nothing. But the camera rtcpu modules (capture-ivc, camchar,
+# camera-diagnostics) and the AON driver call the legacy tegra_ivc_* API
+# exported here, so the dummy breaks modpost for them. The real driver's probe
+# is a safe no-op on baremetal, so building it unconditionally is correct.
 obj-m		+= ivc_ext.o
-else
-obj-m		+= ivc_ext.o
-ivc_ext-objs := ivc_ext_dummy.o
-endif
 
 ifneq ($(NV_OOT_TEGRA_BPMP_SKIP_BUILD),y)
 tegra_bpmp-y	+= ../../clk/tegra/clk-bpmp.o

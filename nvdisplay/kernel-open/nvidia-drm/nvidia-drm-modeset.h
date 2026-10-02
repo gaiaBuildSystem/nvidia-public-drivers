@@ -30,17 +30,17 @@
 #include "nvkms-kapi.h"
 
 struct drm_device;
-struct drm_atomic_state;
+struct drm_atomic_commit;
 
-struct drm_atomic_state *nv_drm_atomic_state_alloc(struct drm_device *dev);
-void nv_drm_atomic_state_clear(struct drm_atomic_state *state);
-void nv_drm_atomic_state_free(struct drm_atomic_state *state);
+struct drm_atomic_commit *nv_drm_atomic_state_alloc(struct drm_device *dev);
+void nv_drm_atomic_state_clear(struct drm_atomic_commit *state);
+void nv_drm_atomic_state_free(struct drm_atomic_commit *state);
 
 int nv_drm_atomic_check(struct drm_device *dev,
-                        struct drm_atomic_state *state);
+                        struct drm_atomic_commit *state);
 
 int nv_drm_atomic_commit(struct drm_device *dev,
-                         struct drm_atomic_state *state, bool nonblock);
+                         struct drm_atomic_commit *state, bool nonblock);
 
 
 void nv_drm_handle_flip_occurred(struct nv_drm_device *nv_dev,

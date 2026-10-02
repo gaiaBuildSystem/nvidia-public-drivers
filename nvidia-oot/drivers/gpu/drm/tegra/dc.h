@@ -9,6 +9,8 @@
 
 #include <linux/host1x-next.h>
 
+#include <soc/tegra/pmc.h>
+
 #include <drm/drm_crtc.h>
 
 #include "drm.h"
@@ -83,6 +85,7 @@ struct tegra_dc {
 	struct host1x_client client;
 	struct host1x_syncpt *syncpt;
 	struct device *dev;
+	struct tegra_pmc *pmc;
 
 	struct drm_crtc base;
 	unsigned int powergate;
@@ -165,7 +168,7 @@ int tegra_dc_state_setup_clock(struct tegra_dc *dc,
 			       struct clk *clk, unsigned long pclk,
 			       unsigned int div);
 void tegra_crtc_atomic_post_commit(struct drm_crtc *crtc,
-				   struct drm_atomic_state *state);
+				   struct drm_atomic_commit *state);
 
 /* from rgb.c */
 int tegra_dc_rgb_probe(struct tegra_dc *dc);

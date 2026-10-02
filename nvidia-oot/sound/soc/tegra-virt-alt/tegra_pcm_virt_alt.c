@@ -312,14 +312,14 @@ err:
 	return ret;
 }
 
-static int tegra_alt_pcm_new(struct snd_soc_component *c,
+static int __maybe_unused tegra_alt_pcm_new(struct snd_soc_component *c,
 					struct snd_soc_pcm_runtime *rtd)
 {
 	return tegra_alt_pcm_dma_allocate(rtd,
-				tegra_alt_pcm_hardware.buffer_bytes_max);
+					tegra_alt_pcm_hardware.buffer_bytes_max);
 }
 
-static void tegra_alt_pcm_free(struct snd_soc_component *c,
+static void __maybe_unused tegra_alt_pcm_free(struct snd_soc_component *c,
 						struct snd_pcm *pcm)
 {
 	tegra_alt_pcm_deallocate_dma_buffer(pcm, SNDRV_PCM_STREAM_CAPTURE);
@@ -358,8 +358,6 @@ static struct snd_soc_component_driver tegra_alt_pcm_platform = {
 	.hw_free	= tegra_alt_pcm_hw_free,
 	.pointer	= tegra_alt_pcm_pointer,
 	.mmap		= tegra_alt_pcm_mmap,
-	.pcm_construct	= tegra_alt_pcm_new,
-	.pcm_destruct	= tegra_alt_pcm_free,
 	.probe		= tegra_alt_pcm_probe,
 #ifdef CONFIG_DEBUG_FS
 	.debugfs_prefix = "pcm",

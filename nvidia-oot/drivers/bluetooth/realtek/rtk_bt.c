@@ -2043,12 +2043,12 @@ static int btusb_probe(struct usb_interface *intf,
 
 #if HCI_VERSION_CODE >= KERNEL_VERSION(5, 8, 0)
 	set_bit(BTUSB_USE_ALT3_FOR_WBS, &data->flags);
-	set_bit(HCI_QUIRK_WIDEBAND_SPEECH_SUPPORTED, &hdev->quirks);
+	set_bit(HCI_QUIRK_WIDEBAND_SPEECH_SUPPORTED, hdev->quirk_flags);
 #endif
 
 #if HCI_VERSION_CODE >= KERNEL_VERSION(3, 7, 1)
 	if (!reset)
-		set_bit(HCI_QUIRK_RESET_ON_CLOSE, &hdev->quirks);
+		set_bit(HCI_QUIRK_RESET_ON_CLOSE, hdev->quirk_flags);
 #endif
 
 	/* Interface numbers are hardcoded in the specification */
@@ -2065,7 +2065,7 @@ static int btusb_probe(struct usb_interface *intf,
 	}
 
 #if HCI_VERSION_CODE >= KERNEL_VERSION(4, 1, 0)
-	set_bit(HCI_QUIRK_SIMULTANEOUS_DISCOVERY, &hdev->quirks);
+	set_bit(HCI_QUIRK_SIMULTANEOUS_DISCOVERY, hdev->quirk_flags);
 #endif
 
 	err = hci_register_dev(hdev);

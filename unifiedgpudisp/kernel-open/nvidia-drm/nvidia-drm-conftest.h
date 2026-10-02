@@ -136,9 +136,9 @@
 
 /*
  * FreeBSD does not implement drm_atomic_state_free, simply
- * default to drm_atomic_state_put
+ * default to drm_atomic_commit_put
  */
-#define drm_atomic_state_free drm_atomic_state_put
+#define drm_atomic_state_free drm_atomic_commit_put
 
 #if __FreeBSD_version < 1300000
 /* redefine LIST_HEAD_INIT to the linux version */

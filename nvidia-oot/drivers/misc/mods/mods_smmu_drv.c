@@ -86,7 +86,7 @@ static int mods_smmu_driver_probe(struct platform_device *pdev)
 		return -ENOMEM;
 	}
 	mods_smmu_devs[dev_idx].dev = &pdev->dev;
-	strncpy(mods_smmu_devs[dev_idx].dev_name,
+	strscpy(mods_smmu_devs[dev_idx].dev_name,
 		dev_name,
 		MAX_DT_SIZE - 1);
 #ifdef MODS_ENABLE_BPMP_MRQ_API

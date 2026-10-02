@@ -109,9 +109,13 @@ NV_STATUS NV_API_CALL nv_soc_pm_powergate(
 #if NV_SUPPORTS_PLATFORM_DISPLAY_DEVICE
     NV_STATUS status      = NV_ERR_GENERIC;
     nv_linux_state_t *nvl = NV_GET_NVL_FROM_NV_STATE(nv);
-    NvS32 ret             = -EBUSY;
+    NvS32 ret             = 0;
 
-    ret = pm_runtime_put(nvl->dev);
+    /*
+     * pm_runtime_put() returns void since Linux 7.2 (it used to return an
+     * int status). It always succeeds, so treat it as a success.
+     */
+    pm_runtime_put(nvl->dev);
 
     if (ret == 0)
     {

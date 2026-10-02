@@ -1160,9 +1160,9 @@ u8 rtw_joinbss_cmd(_adapter  *padapter, struct wlan_network *pnetwork)
 	pqospriv->qos_option = 0;
 
 	if (pregistrypriv->wmm_enable) {
-#ifdef CONFIG_WMMPS_STA	
+#ifdef CONFIG_WMMPS_STA
 		rtw_uapsd_use_default_setting(padapter);
-#endif /* CONFIG_WMMPS_STA */		
+#endif /* CONFIG_WMMPS_STA */
 		tmp_len = rtw_restruct_wmm_ie(padapter, &pnetwork->network.IEs[0], &psecnetwork->IEs[0], pnetwork->network.IELength, psecnetwork->IELength);
 
 		if (psecnetwork->IELength != tmp_len) {
@@ -1327,7 +1327,7 @@ u8 rtw_stop_ap_cmd(_adapter  *adapter, u8 flags)
 		parm->type = 0;
 		parm->size = 0;
 		parm->pbuf = NULL;
-		
+
 		/* need enqueue, prepare cmd_obj and enqueue */
 		cmdobj = (struct cmd_obj *)rtw_zmalloc(sizeof(*cmdobj));
 		if (cmdobj == NULL) {
@@ -1365,7 +1365,7 @@ u8 rtw_tx_control_cmd(_adapter *adapter)
 	struct cmd_priv *pcmdpriv = &adapter->cmdpriv;
 
 	u8 res = _SUCCESS;
-	
+
 	ph2c = (struct cmd_obj *)rtw_zmalloc(sizeof(struct cmd_obj));
 	if (ph2c == NULL){
 		res = _FAIL;
@@ -1388,7 +1388,7 @@ u8 rtw_tx_control_cmd(_adapter *adapter)
 	res = rtw_enqueue_cmd(pcmdpriv, ph2c);
 
 exit:
-	return res;	
+	return res;
 }
 #endif
 
@@ -1470,7 +1470,7 @@ u8 rtw_setstakey_cmd(_adapter *padapter, struct sta_info *sta, u8 key_type, bool
 	else
 		GET_ENCRY_ALGO(psecuritypriv, sta, psetstakey_para->algorithm, _FALSE);
 
-	if ((psetstakey_para->algorithm == _GCMP_256_) || (psetstakey_para->algorithm == _CCMP_256_)) 
+	if ((psetstakey_para->algorithm == _GCMP_256_) || (psetstakey_para->algorithm == _CCMP_256_))
 		key_len = 32;
 
 	if (key_type == GROUP_KEY) {
@@ -2811,7 +2811,7 @@ u8 _lps_chk_by_tp(_adapter *adapter, u8 from_timer)
 #endif
 
 static u8 _lps_chk_by_pkt_cnts(_adapter *padapter, u8 from_timer, u8 bBusyTraffic)
-{		
+{
 	struct mlme_priv *pmlmepriv = &(padapter->mlmepriv);
 	u8	bEnterPS = _FALSE;
 
@@ -3092,7 +3092,7 @@ static void dynamic_update_bcn_check(_adapter *padapter)
 
 		if (_FALSE != ATOMIC_READ(&pmlmepriv->olbc)
 			&& _FALSE != ATOMIC_READ(&pmlmepriv->olbc_ht)) {
-					
+
 			if (rtw_ht_operation_update(padapter) > 0) {
 				update_beacon(padapter, _HT_CAPABILITY_IE_, NULL, _FALSE, 0);
 				update_beacon(padapter, _HT_ADD_INFO_IE_, NULL, _TRUE, 0);
@@ -5410,7 +5410,7 @@ static s32 rtw_req_per_cmd_hdl(_adapter *adapter)
 	}
 
 	/* group_macid: always be 0 in NIC, so only pass macid_bitmap.m0
-	 * rpt_type: 0 includes all info in 1, use 0 for now 
+	 * rpt_type: 0 includes all info in 1, use 0 for now
 	 * macid_bitmap: pass m0 only for NIC
 	 */
 	ret = rtw_hal_set_req_per_rpt_cmd(adapter, 0, 0, req_macid_bmp.m0);

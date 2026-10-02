@@ -8,6 +8,7 @@
 #include <nvidia/conftest.h>
 
 #include <linux/seq_file.h>
+#include <linux/of_gpio.h>
 #include <linux/debugfs.h>
 #include <media/camera_common.h>
 #include <linux/module.h>
@@ -17,7 +18,6 @@
 #include <linux/seq_file.h>
 #include <linux/of.h>
 #include <linux/of_device.h>
-#include <linux/of_gpio.h>
 
 #include "max929x.h"
 

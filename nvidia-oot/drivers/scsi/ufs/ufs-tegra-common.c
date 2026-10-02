@@ -1480,14 +1480,15 @@ static int ufs_tegra_pwr_change_notify(struct ufs_hba *hba,
 #else
 static int ufs_tegra_pwr_change_notify(struct ufs_hba *hba,
 		enum ufs_notify_change_status status,
-		struct ufs_pa_layer_attr *dev_max_params,
-		struct ufs_pa_layer_attr *dev_req_params)
+                struct ufs_pa_layer_attr *dev_req_params)
 #endif
 {
-	struct ufs_tegra_host *ufs_tegra = hba->priv;
-	u32 vs_save_config;
-	int ret = 0;
-	u32 pa_reg_check;
+        struct ufs_tegra_host *ufs_tegra = hba->priv;
+        const struct ufs_pa_layer_attr *dev_max_params =
+                &hba->max_pwr_info.info;
+        u32 vs_save_config;
+        u32 pa_reg_check;
+        int ret = 0;
 
 	if (!dev_req_params) {
 		pr_err("%s: incoming dev_req_params is NULL\n", __func__);

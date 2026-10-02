@@ -13,7 +13,7 @@
 #include <linux/platform_device.h>
 #include <linux/of_platform.h>
 #include <linux/gpio.h>
-#include <linux/of_gpio.h>
+#include <linux/gpio/legacy.h>
 #endif
 
 #define PCI_VENDOR_ID_NVIDIA 0x10de
@@ -1630,7 +1630,7 @@ int esc_mods_map_irq_to_gpio(struct mods_client    *client,
 {
 	//TODO: Make sure you are allocating gpio properly
 	struct device_node *np;
-	int gpio_handle;
+	struct gpio_desc *gpio_handle;
 	int irq;
 	int err = 0;
 
@@ -1655,22 +1655,24 @@ int esc_mods_map_irq_to_gpio(struct mods_client    *client,
 		}
 	}
 
-	gpio_handle = of_get_named_gpio(np, p->name, 0);
-	if (!gpio_is_valid(gpio_handle)) {
+	gpio_handle = fwnode_gpiod_get(&np->fwnode, p->name, GPIOD_IN, "gpio");
+	if (IS_ERR(gpio_handle)) {
 		cl_error("gpio %s is missing\n", p->name);
-		err = gpio_handle;
+		err = PTR_ERR(gpio_handle);
 		goto error;
 	}
 
-	err = gpio_direction_input(gpio_handle);
+	err = gpiod_direction_input(gpio_handle);
 	if (err < 0) {
 		cl_error("pex_rst_gpio input direction change failed\n");
+		gpiod_put(gpio_handle);
 		goto error;
 	}
 
-	irq = gpio_to_irq(gpio_handle);
+	irq = gpiod_to_irq(gpio_handle);
 	if (irq < 0) {
 		cl_error("Unable to get irq for pex_rst_gpio\n");
+		gpiod_put(gpio_handle);
 		err = -EINVAL;
 		goto error;
 	}

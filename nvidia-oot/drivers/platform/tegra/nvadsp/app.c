@@ -9,6 +9,7 @@
 #include <linux/firmware.h>
 #include <linux/dma-buf.h>
 #include <linux/slab.h>
+#include <linux/string.h>
 #include <linux/elf.h>
 
 #include "aram_manager.h"
@@ -291,8 +292,10 @@ static inline void extract_appname(char *appname, const char *appfile)
 	char *token = strstr(appfile, DYN_APP_EXTN);
 	int len = token ? token - appfile : strlen(appfile);
 
-	strncpy(appname, appfile, len);
-	appname[len] = '\0';
+	if (len < 0)
+		len = 0;
+
+	strscpy(appname, appfile, len);
 }
 
 static nvadsp_app_handle_t app_load(struct nvadsp_app_priv_struct *priv,

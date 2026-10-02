@@ -5106,8 +5106,8 @@ static struct snd_soc_component_driver tegra210_adsp_cmpnt = {
 	.controls		= tegra210_adsp_controls,
 	.num_controls		= ARRAY_SIZE(tegra210_adsp_controls),
 	.probe			= tegra210_adsp_component_probe,
-	.pcm_construct		= tegra210_adsp_pcm_construct,
-	.pcm_destruct		= tegra210_adsp_pcm_destruct,
+	.pcm_new			= tegra210_adsp_pcm_construct,
+	.pcm_free			= tegra210_adsp_pcm_destruct,
 
 	/* PCM ops */
 	.open			= tegra210_adsp_pcm_open,

@@ -41,6 +41,7 @@ struct gr3d_soc {
 };
 
 struct gr3d {
+	struct tegra_pmc *pmc;
 	struct tegra_drm_client client;
 	struct host1x_channel *channel;
 
@@ -358,7 +359,7 @@ static int gr3d_power_up_legacy_domain(struct device *dev, const char *name,
 	if (err) {
 		dev_err(dev, "failed to acquire %s reset: %d\n", name, err);
 	} else {
-		err = tegra_powergate_sequence_power_up(id, clk, reset);
+		err = tegra_pmc_powergate_sequence_power_up(gr3d->pmc, id, clk, reset);
 		reset_control_release(reset);
 	}
 
@@ -367,7 +368,7 @@ static int gr3d_power_up_legacy_domain(struct device *dev, const char *name,
 		return err;
 
 	/*
-	 * tegra_powergate_sequence_power_up() leaves clocks enabled,
+	 * tegra_pmc_powergate_sequence_power_up() leaves clocks enabled,
 	 * while GENPD not. Hence keep clock-enable balanced.
 	 */
 	clk_disable_unprepare(clk);
@@ -518,6 +519,10 @@ static int gr3d_probe(struct platform_device *pdev)
 	platform_set_drvdata(pdev, gr3d);
 
 	gr3d->soc = of_device_get_match_data(&pdev->dev);
+
+	gr3d->pmc = devm_tegra_pmc_get(&pdev->dev);
+	if (IS_ERR(gr3d->pmc))
+		gr3d->pmc = NULL;
 
 	syncpts = devm_kzalloc(&pdev->dev, sizeof(*syncpts), GFP_KERNEL);
 	if (!syncpts)

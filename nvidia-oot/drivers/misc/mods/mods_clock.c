@@ -2,6 +2,8 @@
 /* SPDX-FileCopyrightText: Copyright (c) 2011-2023, NVIDIA CORPORATION.  All rights reserved. */
 
 #include "mods_internal.h"
+#include <asm/string.h>
+#include <linux/string.h>
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
 #include <linux/of_device.h>
@@ -79,7 +81,10 @@ void mods_init_clock_api(void)
 		pp->length = 0;
 		goto err;
 	}
-	strncpy(pp->value, okay_value, size_value);
+	if (strscpy(pp->value, okay_value, size_value) < 0) {
+		pp->length = 0;
+		goto err;
+	}
 	pp->length = size_value;
 
 err:
@@ -295,7 +300,7 @@ int esc_mods_get_rst_handle(struct mods_client *client,
 	if (IS_ERR(p_reset_ctrl))
 		cl_error("reset (%s) not found\n", p->reset_name);
 	else {
-		strncpy(reset_data.name, p->reset_name,
+		strscpy(reset_data.name, p->reset_name,
 			sizeof(reset_data.name) - 1);
 		if (reset_data.name[sizeof(reset_data.name) - 1] != '\0') {
 			cl_error(

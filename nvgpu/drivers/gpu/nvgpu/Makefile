@@ -32,6 +32,9 @@ ccflags-y += -Wframe-larger-than=2048
 ccflags-y += -Wno-multichar
 ccflags-y += -Werror
 ccflags-y += -Wno-error=cpp
+# Force-include a compat header providing strncpy(), which the target kernel
+# (7.2) no longer declares. See nvidia-oot/include/linux/strncpy_compat.h.
+ccflags-y += -include $(srctree.nvidia)/include/linux/strncpy_compat.h
 ccflags-y += -Wmissing-prototypes
 ifeq ($(VERSION),4)
 ccflags-y += -Wextra -Wno-unused-parameter -Wno-missing-field-initializers

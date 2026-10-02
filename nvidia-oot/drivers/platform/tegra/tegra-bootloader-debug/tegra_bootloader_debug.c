@@ -9,6 +9,7 @@
 #include <linux/spinlock.h>
 #include <linux/io.h>
 #include <linux/string.h>
+#include <asm/string.h>
 #include <linux/types.h>
 #include <linux/platform_device.h>
 #include <linux/of.h>
@@ -250,8 +251,7 @@ size_t tegra_bl_add_profiler_entry(const char *buf, size_t len)
 		profiler_data[i].timestamp = arch_timer_get_us();
 	}
 
-	strncpy(profiler_data[i].str, buf, len);
-	profiler_data[i].str[len] = '\0';
+	strscpy(profiler_data[i].str, buf, len);
 	/* Trim trailing '\n' in case 'echo' command is used */
 	if (profiler_data[i].str[len - 1] == '\n') {
 		profiler_data[i].str[len - 1] = '\0';

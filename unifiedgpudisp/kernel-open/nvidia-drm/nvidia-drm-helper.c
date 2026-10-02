@@ -56,7 +56,7 @@
  * nv_drm_for_each_crtc instead of drm_for_each_crtc to loop over all crtcs,
  * use for_each_new_*_in_state instead of for_each_connector_in_state to loop
  * over all modeset object states, and use drm_atomic_state_free() if
- * drm_atomic_state_put() is not available.
+ * drm_atomic_commit_put() is not available.
  *
  * drm_atomic_helper_disable_all() is copied from
  *     linux/drivers/gpu/drm/drm_atomic_helper.c @
@@ -91,7 +91,7 @@
 int nv_drm_atomic_helper_disable_all(struct drm_device *dev,
                                      struct drm_modeset_acquire_ctx *ctx)
 {
-    struct drm_atomic_state *state;
+    struct drm_atomic_commit *state;
     struct drm_connector_state *conn_state;
     struct drm_connector *conn;
     struct drm_plane_state *plane_state;
@@ -101,7 +101,7 @@ int nv_drm_atomic_helper_disable_all(struct drm_device *dev,
     unsigned plane_mask = 0;
     int ret, i;
 
-    state = drm_atomic_state_alloc(dev);
+    state = drm_atomic_commit_alloc(dev);
     if (!state)
         return -ENOMEM;
 
@@ -173,7 +173,7 @@ free:
        }
     }
 
-    drm_atomic_state_put(state);
+    drm_atomic_commit_put(state);
 
     return ret;
 }

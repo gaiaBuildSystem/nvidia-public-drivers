@@ -35,6 +35,13 @@ LINUXINCLUDE += -I$(srctree.nvidia-oot)/include
 
 subdir-ccflags-y += -Werror
 subdir-ccflags-y += -Wmissing-prototypes
+# Demote a warning emitted from an upstream kernel header (of.h
+# _OF_DECLARE_STUB pointer comparison) that would otherwise fail the -Werror
+# build. The kernel source itself is not modified.
+subdir-ccflags-y += -Wno-error=compare-distinct-pointer-types
+# Force-include a compat header providing strncpy(), which the target kernel
+# no longer declares (and no longer exports). See linux/strncpy_compat.h.
+subdir-ccflags-y += -include $(srctree.nvidia-oot)/include/linux/strncpy_compat.h
 
 ifeq ($(CONFIG_TEGRA_SYSTEM_TYPE_ACK),y)
 subdir-ccflags-y += -DCONFIG_TEGRA_SYSTEM_TYPE_ACK

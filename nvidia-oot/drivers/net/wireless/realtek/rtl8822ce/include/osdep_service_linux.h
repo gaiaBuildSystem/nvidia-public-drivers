@@ -51,7 +51,26 @@
 #include <linux/rtnetlink.h>
 #include <linux/delay.h>
 #include <linux/interrupt.h>	/* for struct tasklet_struct */
+#include <linux/timer.h>
 #include <linux/ip.h>
+
+/*
+ * Linux 7.2 removed the legacy timer API names in favour of new ones:
+ *   from_timer(var, ptr, member)  -> timer_container_of(var, ptr, member)
+ *   del_timer(&t)                 -> timer_delete(&t)
+ *   del_timer_sync(&t)            -> timer_delete_sync(&t)
+ * Provide compat macros so the (unmodified) driver sources below keep working.
+ */
+#ifndef from_timer
+#define from_timer(var, ptr, member) \
+	timer_container_of(var, ptr, member)
+#endif
+#ifndef del_timer
+#define del_timer(t)		timer_delete(t)
+#endif
+#ifndef del_timer_sync
+#define del_timer_sync(t)	timer_delete_sync(t)
+#endif
 #include <linux/kthread.h>
 #include <linux/list.h>
 #include <linux/vmalloc.h>

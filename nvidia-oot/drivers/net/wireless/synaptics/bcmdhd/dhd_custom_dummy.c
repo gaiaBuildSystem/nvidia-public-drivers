@@ -52,7 +52,6 @@
 #include <linux/skbuff.h>
 #include <linux/fcntl.h>
 #include <linux/fs.h>
-#include <linux/of_gpio.h>
 #ifdef CONFIG_WIFI_CONTROL_FUNC
 #include <linux/wlan_plat.h>
 #else

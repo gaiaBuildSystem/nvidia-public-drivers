@@ -47,6 +47,21 @@ static u64 ether_get_systime_us(void)
 }
 #endif
 
+static int of_get_named_gpio(struct device_node *np, const char *name,
+                             unsigned int idx)
+{
+	struct gpio_desc *desc;
+	int gpio;
+
+	desc = fwnode_gpiod_get(&np->fwnode, name, GPIOD_IN, "phy_reset");
+	if (IS_ERR(desc))
+		return PTR_ERR(desc);
+
+	gpio = desc_to_gpio(desc);
+	gpiod_put(desc);
+	return gpio;
+}
+
 struct ether_phy_reset_gpio {
 	int phy_reset;
 	atomic_t ref_count;

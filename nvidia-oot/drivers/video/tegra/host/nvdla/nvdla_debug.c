@@ -7,6 +7,7 @@
 #include <linux/arm64-barrier.h>
 #include <linux/platform_device.h>
 #include <linux/debugfs.h>
+#include <linux/string.h>
 #include "port/nvdla_host_wrapper.h"
 #include <linux/uaccess.h>
 #include <linux/delay.h>
@@ -114,8 +115,8 @@ static int32_t parse_pretty_config(struct platform_device *pdev,
 			nvdla_dbg_err(pdev, "value too long: '%s'\n", value);
 			return -EINVAL;
 		}
-		strncpy(prettyconfig->values[value_count], value, strlen(value));
-		prettyconfig->values[value_count][strlen(value)] = '\0';
+		strscpy(prettyconfig->values[value_count], value,
+			sizeof(prettyconfig->values[value_count]));
 		value_count++;
 
 		value = next_val;

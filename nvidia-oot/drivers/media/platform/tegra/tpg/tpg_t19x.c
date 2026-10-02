@@ -11,7 +11,8 @@
 #include <media/csi.h>
 
 #include <linux/host1x.h>
-#include "soc/tegra/camrtc-capture-messages.h"
+#include <linux/string.h>
+#include <soc/tegra/camrtc-capture-messages.h>
 
 #include <soc/tegra/fuse.h>
 

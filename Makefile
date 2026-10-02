@@ -109,7 +109,7 @@ nvidia-oot: conftest hwpm
 		$(MAKECMDGOALS)
 
 nvgpu: conftest nvidia-oot
-	if [ ! -d "$(MAKEFILE_DIR)/nvgpu" ] ; then \
+	@if [ ! -d "$(MAKEFILE_DIR)/nvgpu" ] ; then \
 		echo "Directory nvgpu is not found, exiting.."; \
 		false; \
 	fi

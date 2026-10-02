@@ -1626,7 +1626,7 @@ static int __nv_drm_cursor_atomic_check(struct drm_plane *plane,
 
 #if defined(NV_DRM_PLANE_ATOMIC_CHECK_HAS_ATOMIC_STATE_ARG)
 static int nv_drm_plane_atomic_check(struct drm_plane *plane,
-                                     struct drm_atomic_state *state)
+                                     struct drm_atomic_commit *state)
 #else
 static int nv_drm_plane_atomic_check(struct drm_plane *plane,
                                      struct drm_plane_state *plane_state)
@@ -2444,7 +2444,7 @@ static int color_mgmt_config_set_luts(struct nv_drm_crtc_state *nv_crtc_state,
  */
 #if defined(NV_DRM_CRTC_ATOMIC_CHECK_HAS_ATOMIC_STATE_ARG)
 static int nv_drm_crtc_atomic_check(struct drm_crtc *crtc,
-                                    struct drm_atomic_state *state)
+                                    struct drm_atomic_commit *state)
 #else
 static int nv_drm_crtc_atomic_check(struct drm_crtc *crtc,
                                     struct drm_crtc_state *crtc_state)

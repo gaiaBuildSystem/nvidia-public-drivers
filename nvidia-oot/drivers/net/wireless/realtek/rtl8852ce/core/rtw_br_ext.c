@@ -71,6 +71,27 @@
 #define MAGIC_CODE_LEN	2
 #define WAIT_TIME_PPPOE	5	/* waiting time for pppoe server in sec */
 
+/*
+ * The kernel's <uapi/linux/if_pppox.h> only declares the flexible arrays
+ * (pppoe_tag.tag_data[] and pppoe_hdr.tag[]) for userspace (#ifndef
+ * __KERNEL__), so kernel builds cannot index them. Define local copies that
+ * always carry the trailing tag data, matching the on-wire PPPoE layout
+ * (header followed by the tag list).
+ */
+struct rtw_pppoe_tag {
+	__be16 tag_type;
+	__be16 tag_len;
+	__u8 tag_data[];
+} __packed;
+
+struct rtw_pppoe_hdr {
+	__u8 type:4, ver:4;
+	__u8 code;
+	__be16 sid;
+	__be16 length;
+	struct rtw_pppoe_tag tag[];
+} __packed;
+
 /*-----------------------------------------------------------------
   How database records network address:
            0    1    2    3    4    5    6    7    8    9   10
@@ -84,7 +105,7 @@
 
 
 /* Find a tag in pppoe frame and return the pointer */
-static __inline__ unsigned char *__nat25_find_pppoe_tag(struct pppoe_hdr *ph, unsigned short type)
+static __inline__ unsigned char *__nat25_find_pppoe_tag(struct rtw_pppoe_hdr *ph, unsigned short type)
 {
 	unsigned char *cur_ptr, *start_ptr;
 	unsigned short tagLen, tagType;
@@ -102,9 +123,9 @@ static __inline__ unsigned char *__nat25_find_pppoe_tag(struct pppoe_hdr *ph, un
 }
 
 
-static __inline__ int __nat25_add_pppoe_tag(struct sk_buff *skb, struct pppoe_tag *tag)
+static __inline__ int __nat25_add_pppoe_tag(struct sk_buff *skb, struct rtw_pppoe_tag *tag)
 {
-	struct pppoe_hdr *ph = (struct pppoe_hdr *)(skb->data + ETH_HLEN);
+	struct rtw_pppoe_hdr *ph = (struct rtw_pppoe_hdr *)(skb->data + ETH_HLEN);
 	int data_len;
 
 	data_len = tag->tag_len + TAG_HDR_LEN;
@@ -1117,7 +1138,7 @@ int nat25_db_handle(_adapter *priv, struct sk_buff *skb, int method)
 	/*---------------------------------------------------*/
 	else if ((protocol == __constant_htons(ETH_P_PPP_DISC)) ||
 		 (protocol == __constant_htons(ETH_P_PPP_SES))) {
-		struct pppoe_hdr *ph = (struct pppoe_hdr *)(skb->data + ETH_HLEN);
+		struct rtw_pppoe_hdr *ph = (struct rtw_pppoe_hdr *)(skb->data + ETH_HLEN);
 		unsigned short *pMagic;
 
 		switch (method) {
@@ -1130,12 +1151,12 @@ int nat25_db_handle(_adapter *priv, struct sk_buff *skb, int method)
 			if (ph->sid == 0) {	/* Discovery phase according to tag */
 				if (ph->code == PADI_CODE || ph->code == PADR_CODE) {
 					if (priv->ethBrExtInfo.addPPPoETag) {
-						struct pppoe_tag *tag, *pOldTag;
+						struct rtw_pppoe_tag *tag, *pOldTag;
 						unsigned char tag_buf[40];
 						int old_tag_len = 0;
 
-						tag = (struct pppoe_tag *)tag_buf;
-						pOldTag = (struct pppoe_tag *)__nat25_find_pppoe_tag(ph, ntohs(PTT_RELAY_SID));
+						tag = (struct rtw_pppoe_tag *)tag_buf;
+						pOldTag = (struct rtw_pppoe_tag *)__nat25_find_pppoe_tag(ph, ntohs(PTT_RELAY_SID));
 						if (pOldTag) { /* if SID existed, copy old value and delete it */
 							old_tag_len = ntohs(pOldTag->tag_len);
 							if (old_tag_len + TAG_HDR_LEN + MAGIC_CODE_LEN + RTL_RELAY_TAG_LEN > sizeof(tag_buf)) {
@@ -1200,7 +1221,7 @@ int nat25_db_handle(_adapter *priv, struct sk_buff *skb, int method)
 		case NAT25_LOOKUP:
 			if (ph->code == PADO_CODE || ph->code == PADS_CODE) {
 				if (priv->ethBrExtInfo.addPPPoETag) {
-					struct pppoe_tag *tag;
+					struct rtw_pppoe_tag *tag;
 					unsigned char *ptr;
 					unsigned short tagType, tagLen;
 					int offset = 0;
@@ -1211,7 +1232,7 @@ int nat25_db_handle(_adapter *priv, struct sk_buff *skb, int method)
 						return -1;
 					}
 
-					tag = (struct pppoe_tag *)ptr;
+					tag = (struct rtw_pppoe_tag *)ptr;
 					tagType = (unsigned short)((ptr[0] << 8) + ptr[1]);
 					tagLen = (unsigned short)((ptr[2] << 8) + ptr[3]);
 

@@ -14,5 +14,8 @@
 ifeq ($(shell expr $(VERSION) \> 4), 1)
 ccflags-y += -Werror
 EXTRA_CFLAGS += -I$(srctree.nvidia-oot)/drivers/virt/tegra/
+# Linux 7.2 kbuild no longer honours EXTRA_CFLAGS; add the include path via
+# ccflags-y (the mechanism the current kbuild consumes).
+ccflags-y += -I$(srctree.nvidia-oot)/drivers/virt/tegra/
 obj-m := nv-virtio-console-poc.o
 endif

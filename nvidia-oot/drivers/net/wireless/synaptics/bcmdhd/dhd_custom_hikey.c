@@ -42,6 +42,7 @@
  */
 
 #include <linux/kernel.h>
+#include <linux/of_gpio.h>
 #include <linux/init.h>
 #include <linux/platform_device.h>
 #include <linux/delay.h>
@@ -50,7 +51,6 @@
 #include <linux/skbuff.h>
 #include <linux/fcntl.h>
 #include <linux/fs.h>
-#include <linux/of_gpio.h>
 #include <linux/skbuff.h>
 #ifdef CONFIG_WIFI_CONTROL_FUNC
 #include <linux/wlan_plat.h>

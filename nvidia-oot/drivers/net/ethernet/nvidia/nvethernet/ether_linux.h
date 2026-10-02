@@ -29,7 +29,6 @@
 #include <linux/interrupt.h>
 #include <linux/workqueue.h>
 #include <linux/spinlock.h>
-#include <linux/of_gpio.h>
 #include <linux/of_mdio.h>
 #include <linux/if_vlan.h>
 #include <linux/thermal.h>
@@ -52,6 +51,9 @@
 #include <net/pkt_sched.h>
 #include <soc/tegra/virt/hv-ivc.h>
 #include <soc/tegra/fuse.h>
+#if defined(CONFIG_GPIOLIB_LEGACY)
+#include <linux/gpio/legacy.h>
+#endif
 #if IS_ENABLED(CONFIG_PAGE_POOL)
 #if defined(NV_NET_PAGE_POOL_H_PRESENT)
 #include <net/page_pool.h>

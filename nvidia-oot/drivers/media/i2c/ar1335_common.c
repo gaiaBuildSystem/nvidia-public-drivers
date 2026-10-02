@@ -8,6 +8,8 @@
 #include <nvidia/conftest.h>
 
 #include <linux/slab.h>
+#include <linux/string.h>
+#include <linux/of_gpio.h>
 #include <linux/uaccess.h>
 #include <linux/gpio.h>
 #include <linux/module.h>
@@ -15,7 +17,6 @@
 #include <linux/seq_file.h>
 #include <linux/of.h>
 #include <linux/of_device.h>
-#include <linux/of_gpio.h>
 #include <media/camera_common.h>
 #include "../platform/tegra/camera/camera_gpio.h"
 

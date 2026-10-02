@@ -3239,7 +3239,19 @@ static int alter_usermode_mapping(struct gk20a *g,
 
 	if (poweroff) {
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 18, 0)
+		/*
+		 * zap_vma_ptes() was removed in Linux 7.2. The remaining
+		 * exported primitive is zap_special_vma_range()
+		 * (EXPORT_SYMBOL_GPL, same (vma, address, size) signature).
+		 * This vma is a special usermode mapping, so it is the
+		 * correct call.
+		 */
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(7, 2, 0)
+		zap_special_vma_range(vma, vma->vm_start,
+				      vma->vm_end - vma->vm_start);
+#else
 		zap_vma_ptes(vma, vma->vm_start, vma->vm_end - vma->vm_start);
+#endif
 		err = 0;
 #else
 		err = zap_vma_ptes(vma, vma->vm_start,

@@ -2016,7 +2016,7 @@ static snd_pcm_uframes_t
 	return bytes_to_frames(substream->runtime, pos);
 }
 
-static int tegra210_adsp_pcm_construct(struct snd_soc_component *component,
+static int __maybe_unused tegra210_adsp_pcm_construct(struct snd_soc_component *component,
 				       struct snd_soc_pcm_runtime *rtd)
 {
 #if ENABLE_ADSP
@@ -2059,7 +2059,7 @@ err:
 #endif
 }
 
-static void tegra210_adsp_pcm_destruct(struct snd_soc_component *component,
+static void __maybe_unused tegra210_adsp_pcm_destruct(struct snd_soc_component *component,
 				       struct snd_pcm *pcm)
 {
 	struct tegra210_adsp *adsp = dev_get_drvdata(component->dev);
@@ -4437,8 +4437,6 @@ static struct snd_soc_component_driver tegra210_adsp_cmpnt = {
 	.controls		= tegra210_adsp_controls,
 	.num_controls		= ARRAY_SIZE(tegra210_adsp_controls),
 	.probe			= tegra210_adsp_component_probe,
-	.pcm_construct		= tegra210_adsp_pcm_construct,
-	.pcm_destruct		= tegra210_adsp_pcm_destruct,
 
 	/* PCM ops */
 	.open			= tegra210_adsp_pcm_open,

@@ -93,6 +93,10 @@ endif
 ifneq ($(SYSSRCNVOOT),)
  ccflags-y += -I$(SYSSRCNVOOT)/include
  KBUILD_EXTRA_SYMBOLS = $(SYSSRCNVOOT)/Module.symvers
+ # Linux 7.2 no longer provides a kernel-declared strncpy(); force-include the
+ # out-of-tree compat shim so existing strncpy() call sites keep building.
+ NV_STRNCPY_COMPAT_INCLUDE := -include $(SYSSRCNVOOT)/include/linux/strncpy_compat.h
+ ccflags-y += $(NV_STRNCPY_COMPAT_INCLUDE)
 endif
 
 # Some Android kernels prohibit driver use of filesystem functions like
@@ -134,7 +138,7 @@ ifeq ($(ARCH),x86_64)
  ccflags-y += -mno-red-zone -mcmodel=kernel
 endif
 
-ccflags-y += 
+ccflags-y +=
 ccflags-y += $(call cc-option,-Werror=undef,)
 ccflags-y += -DNV_SPECTRE_V2=$(NV_SPECTRE_V2)
 ccflags-y += -DNV_KERNEL_INTERFACE_LAYER
@@ -182,7 +186,11 @@ NV_CONFTEST_CMD := /bin/sh $(NV_CONFTEST_SCRIPT) \
 
 NV_CFLAGS_FROM_CONFTEST := $(shell $(NV_CONFTEST_CMD) build_cflags)
 
-NV_CONFTEST_CFLAGS = $(NV_CFLAGS_FROM_CONFTEST) $(ccflags-y) -fno-pie
+# The strncpy compat shim must NOT be force-included into the conftest
+# preprocessor runs: conftest dumps kernel headers into headers.h, and baking
+# the shim (and its <linux/types.h> include) in there breaks the generated
+# headers. Filter it out of the conftest cflags.
+NV_CONFTEST_CFLAGS = $(NV_CFLAGS_FROM_CONFTEST) $(filter-out $(NV_STRNCPY_COMPAT_INCLUDE),$(ccflags-y)) -fno-pie
 NV_CONFTEST_CFLAGS += $(filter -std=%,$(KBUILD_CFLAGS))
 NV_CONFTEST_CFLAGS += $(call cc-disable-warning,pointer-sign)
 NV_CONFTEST_CFLAGS += $(call cc-option,-fshort-wchar,)

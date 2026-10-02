@@ -1,0 +1,82 @@
+*.o
+*.cmd
+*.ko
+**/compile-tests/*
+*.h.part
+*.o.d
+*.order
+*.mod
+*.dts.tmp
+*.d
+*.d.to_be_processed
+*.o_binary
+*.xz
+**/_out/*
+**/out/*
+*.dtb.d.pre.tmp
+*.dtb.d.dtc.tmp
+*.dtb
+*.dtb.S
+*.tmp
+uts_release
+nv_compiler.h
+
+nvdisplay/kernel-open/conftest/*.h
+unifiedgpudisp/kernel-open/conftest/*.h
+
+# ==========================================
+# Linux Kernel Build System Artifacts
+# ==========================================
+*.o
+*.ko
+*.mod
+*.mod.c
+*.mod.o
+*.o.d
+*.o.cmd
+*.ko.cmd
+*.mod.cmd
+*.cmd
+
+# Symbol and build metadata files
+.tmp_versions/
+modules.order
+Module.symvers
+Module.markers
+modules.builtin
+modules.builtin.modinfo
+.PKGBUILD
+*.unsigned
+
+# GCC/Clang coverage and profiling outputs
+*.gcda
+*.gcno
+
+# Assembly and preprocessed outputs
+*.i
+*.s
+*.lst
+
+# Vim / Emacs / Nano
+*~
+*.swp
+*.swo
+.#*
+\#*#
+
+# CLion / JetBrains
+.idea/
+cmake-build-*/
+
+# ctags / cscope / Bear (compilation database)
+tags
+TAGS
+cscope.*
+compile_commands.json
+
+# ==========================================
+# Local Scripts & System Files
+# ==========================================
+.DS_Store
+Thumbs.db
+*.log

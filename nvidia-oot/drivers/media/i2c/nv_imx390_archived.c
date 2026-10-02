@@ -12,7 +12,6 @@
 #include <linux/seq_file.h>
 #include <linux/of.h>
 #include <linux/of_device.h>
-#include <linux/of_gpio.h>
 
 #include <media/max9295.h>
 #include <media/max9296.h>

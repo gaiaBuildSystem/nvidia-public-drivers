@@ -2430,7 +2430,7 @@ static void rtk_handle_le_terminate_big_complete_evt(u8 * p)
 
 static void rtk_handle_le_big_sync_established_evt(void * p)
 {
-	struct hci_evt_le_big_sync_estabilished *ev = p;
+	struct hci_evt_le_big_sync_established *ev = p;
 	u8 status;
 	u16 big_handle;
 	u16 bis_handle;

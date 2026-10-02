@@ -5,6 +5,7 @@
 #include "hwmailbox.h"
 #include <linux/nospec.h>
 #include <asm/barrier.h>
+#include <linux/string.h>
 
 #define NVADSP_MAILBOX_START	512
 
@@ -195,7 +196,7 @@ static status_t _nvadsp_mbox_open(struct nvadsp_handle *nvadsp_handle,
 		mbox->id = *mid;
 	}
 
-	strncpy(mbox->name, name, NVADSP_MBOX_NAME_MAX);
+	strscpy(mbox->name, name, NVADSP_MBOX_NAME_MAX);
 	mboxq_init(&mbox->recv_queue);
 	mbox->handler = handler;
 	mbox->hdata = hdata;

@@ -213,7 +213,7 @@ CONFIG_WOW_LPS_MODE = default
 CONFIG_SUSPEND_TYPE = 0
 CONFIG_WOW_STA_MIX = n
 CONFIG_GPIO_WAKEUP = n
-# Please contact with RTK support team first. After getting the agreement from RTK support team, 
+# Please contact with RTK support team first. After getting the agreement from RTK support team,
 # you are just able to modify the CONFIG_WAKEUP_GPIO_IDX with customized requirement.
 CONFIG_WAKEUP_GPIO_IDX = default
 CONFIG_HIGH_ACTIVE_DEV2HST = n
@@ -989,3 +989,13 @@ $(foreach flag,$(subst -I,,$(_INC_CFLAGS)),\
 )
 EXTRA_CFLAGS := $(_EXTRA_CFLAGS) $(_INC_CFLAGS)
 endif
+
+# Linux 7.2 kbuild no longer honours EXTRA_CFLAGS (it was removed in favour of
+# ccflags-y). The include paths and warning flags set via EXTRA_CFLAGS above
+# (notably -I$(SOURCETREE)/include required to locate drv_types.h) would be
+# silently dropped, so fold them into ccflags-y which the current kbuild does
+# consume.
+ccflags-y += $(EXTRA_CFLAGS)
+# This third-party driver uses "if (...) ; /* TODO */" placeholder statements
+# throughout; relax that warning under the -Werror inherited from the parent.
+ccflags-y += -Wno-empty-body

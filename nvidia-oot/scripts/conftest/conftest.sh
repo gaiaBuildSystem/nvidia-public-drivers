@@ -4100,7 +4100,7 @@ compile_test() {
             CODE="
             #include <drm/drm_atomic_helper.h>
             void conftest_drm_atomic_helper_swap_state_has_stall_arg(
-                    struct drm_atomic_state *state,
+                    struct drm_atomic_commit *state,
                     bool stall) {
                 (void)drm_atomic_helper_swap_state(state, stall);
             }"
@@ -4119,7 +4119,7 @@ compile_test() {
             CODE="
             #include <drm/drm_atomic_helper.h>
             int conftest_drm_atomic_helper_swap_state_return_int(
-                    struct drm_atomic_state *state,
+                    struct drm_atomic_commit *state,
                     bool stall) {
                 return drm_atomic_helper_swap_state(state, stall);
             }"
@@ -4933,7 +4933,7 @@ compile_test() {
         drm_crtc_atomic_check_has_atomic_state_arg)
             #
             # Determine if drm_crtc_helper_funcs::atomic_check takes 'state'
-            # argument of 'struct drm_atomic_state' type.
+            # argument of 'struct drm_atomic_commit' type.
             #
             # The commit 29b77ad7b9ca ("drm/atomic: Pass the full state to CRTC
             # atomic_check") passed the full atomic state to
@@ -4952,7 +4952,7 @@ compile_test() {
             typeof(*funcs->atomic_check) conftest_drm_crtc_atomic_check_has_atomic_state_arg;
 
             int conftest_drm_crtc_atomic_check_has_atomic_state_arg(
-                    struct drm_crtc *crtc, struct drm_atomic_state *state) {
+                    struct drm_crtc *crtc, struct drm_atomic_commit *state) {
                 return 0;
             }" > conftest$$.c
 
@@ -5039,7 +5039,7 @@ compile_test() {
         drm_plane_atomic_check_has_atomic_state_arg)
             #
             # Determine if drm_plane_helper_funcs::atomic_check takes 'state'
-            # argument of 'struct drm_atomic_state' type.
+            # argument of 'struct drm_atomic_commit' type.
             #
             # The commit 7c11b99a8e58 ("drm/atomic: Pass the full state to
             # planes atomic_check") passed the full atomic state to
@@ -5058,7 +5058,7 @@ compile_test() {
             typeof(*funcs->atomic_check) conftest_drm_plane_atomic_check_has_atomic_state_arg;
 
             int conftest_drm_plane_atomic_check_has_atomic_state_arg(
-                    struct drm_plane *plane, struct drm_atomic_state *state) {
+                    struct drm_plane *plane, struct drm_atomic_commit *state) {
                 return 0;
             }" > conftest$$.c
 
@@ -7601,7 +7601,7 @@ compile_test() {
             #include <drm/drm_modeset_helper_vtables.h>
             void conftest(struct drm_plane_helper_funcs *f) {
                     int (*fn)(struct drm_plane *plane,
-                              struct drm_atomic_state *state, bool flip) = f->atomic_async_check;
+                              struct drm_atomic_commit *state, bool flip) = f->atomic_async_check;
             }"
 
             compile_check_conftest "$CODE" "NV_DRM_PLANE_HELPER_FUNCS_STRUCT_ATOMIC_ASYNC_CHECK_HAS_BOOL_ARG" "" "types"
