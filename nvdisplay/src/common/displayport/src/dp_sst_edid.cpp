@@ -36,11 +36,23 @@
 
 using namespace DisplayPort;
 
+//
+// Abort a pending I2C-over-AUX transaction by issuing an address-only
+// write with MOT=0 (I2C STOP), so the sink/branch releases its DDC bus.
+//
+static void i2cOverAuxStop(AuxBus * auxBus, unsigned DDCAddress)
+{
+    unsigned sizeCompleted;
+    NvU8 dummy = 0;
+    auxBus->transaction(AuxBus::write, AuxBus::i2c, DDCAddress >> 1,
+                        &dummy, 0, &sizeCompleted);
+}
+
 /*
 * seg -> 256 segment of EDID
 * offset -> offset within segment
 */
-static bool readNextBlock(AuxBus * auxBus, NvU8 seg, NvU8 offset, Buffer & buffer, unsigned & totalRead, unsigned DDCAddress, Timer * timer)
+static bool readNextBlockSized(AuxBus * auxBus, NvU8 seg, NvU8 offset, Buffer & buffer, unsigned & totalRead, unsigned DDCAddress, Timer * timer, unsigned transactionSize)
 {
     AuxBus::Type type = AuxBus::i2cMot;
     AuxBus::status auxStatus;
@@ -48,7 +60,6 @@ static bool readNextBlock(AuxBus * auxBus, NvU8 seg, NvU8 offset, Buffer & buffe
     unsigned retries = 0;
     unsigned sizeRequested;
     unsigned sizeCompleted;
-    unsigned transactionSize =  auxBus->transactionSize();
     totalRead = 0;
 
     DP_ASSERT(auxBus);
@@ -161,6 +172,35 @@ static bool readNextBlock(AuxBus * auxBus, NvU8 seg, NvU8 offset, Buffer & buffe
     }
 
     return true;
+}
+
+static bool readNextBlock(AuxBus * auxBus, NvU8 seg, NvU8 offset, Buffer & buffer, unsigned & totalRead, unsigned DDCAddress, Timer * timer)
+{
+    if (readNextBlockSized(auxBus, seg, offset, buffer, totalRead, DDCAddress, timer,
+                           auxBus->transactionSize()))
+    {
+        return true;
+    }
+
+    //
+    // Some DP-to-HDMI/DVI converters can't handle 16-byte I2C-over-AUX reads
+    // and stop answering (same issue Linux DRM works around with
+    // drm_kms_helper.dp_aux_i2c_transfer_size). Release the DDC bus and
+    // retry the block with 1-byte transactions.
+    //
+    DP_PRINTF(DP_WARNING, "DisplayPort: %s: block read failed at totalRead 0x%08x, retrying with 1-byte I2C transactions",
+              __FUNCTION__, totalRead);
+
+    i2cOverAuxStop(auxBus, DDCAddress);
+    timer->sleep(10);
+
+    if (readNextBlockSized(auxBus, seg, offset, buffer, totalRead, DDCAddress, timer, 1))
+    {
+        return true;
+    }
+
+    i2cOverAuxStop(auxBus, DDCAddress);
+    return false;
 }
 
 /*!

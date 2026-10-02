@@ -174,7 +174,7 @@ void ConnectorImpl::applyRegkeyOverrides(const DP_REGKEY_DATABASE& dpRegkeyDatab
               "All regkeys are invalid because dpRegkeyDatabase is not initialized!");
 
     this->bSkipAssessLinkForEDP = dpRegkeyDatabase.bAssesslinkForEdpSkipped;
-    this->bSkipPanelPowerWrite  = dpRegkeyDatabase.bSkipPanelPowerWrite; 
+    this->bSkipPanelPowerWrite  = dpRegkeyDatabase.bSkipPanelPowerWrite;
 
     //
     // Default bHdcpAuthOnlyOnDemand, bMstRestoreHdcpStateAtAttach are true
@@ -7656,15 +7656,28 @@ void ConnectorImpl::notifyLongPulseInternal(bool statusConnected)
             else
             {
                 dev.peerDevice = DownstreamSink;
-                if (hal->isAtLeastVersion(1, 4) && !bDisableNativeDisplayId2xSupport)
+
+                //
+                // Read the EDID first and only fall back to the native
+                // DisplayID 2.x read (DDC 0xA4) when there is no EDID. Some
+                // DP-to-HDMI converters, which don't report a downstream port
+                // in DPCD, wedge on the 0xA4 I2C-over-AUX read and stop
+                // answering any further I2C-over-AUX request until they are
+                // power cycled, which breaks every subsequent EDID read.
+                //
+                bool bEdidRead = EdidReadSST(tmpEdid, auxBus, timer,
+                                             hal->getPendingTestRequestEdidRead(),
+                                             main->isForceRmEdidRequired(),
+                                             main->isForceRmEdidRequired() ? main : 0);
+
+                if (!bEdidRead && hal->isAtLeastVersion(1, 4) &&
+                    !bDisableNativeDisplayId2xSupport)
                 {
                     DisplayId2ReadSST(tmpDid2x, auxBus, timer, main);
                 }
+
                 //  Handle fallback EDID
-                if(!EdidReadSST(tmpEdid, auxBus, timer,
-                                hal->getPendingTestRequestEdidRead(),
-                                main->isForceRmEdidRequired(),
-                                main->isForceRmEdidRequired() ? main : 0))
+                if (!bEdidRead)
                 {
                     bool status = false;
                     //
@@ -8705,7 +8718,7 @@ bool ConnectorImpl::updatePsrLinkState(bool bTurnOnLink)
         {
             bSetPanelPower = false;
         }
-        
+
         if (bSetPanelPower)
         {
             hal->setPowerState(PowerStateD0);
